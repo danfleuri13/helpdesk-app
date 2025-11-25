@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # SERVIÇO 1: Banco de Dados
+  db:
+    image: mysql:8.0
+    container_name: helpdesk_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: helpdesk_system
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306" # Permite você acessar pelo Workbench na sua máquina
+    volumes:
+      - db_data:/var/lib/mysql # Salva os dados mesmo se desligar o container
+
+  # SERVIÇO 2: Backend (Flask)
+  backend:
+    build: ./backend
+    container_name: helpdesk_backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app # Hot-reload: o que você edita na sua máquina, muda no container
+    environment:
+      # O segredo do Docker: O host do banco não é 'localhost', é o nome do serviço 'db'
+      DATABASE_URL: mysql://user:password@db/helpdesk_system
+    depends_on:
+      - db
+
+  # SERVIÇO 3: Frontend (React)
+  frontend:
+    build: ./frontend
+    container_name: helpdesk_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules # Evita conflito de node_modules entre host e container
+    stdin_open: true # Necessário para o React não fechar sozinho
+    tty: true
+
+volumes:
+  db_data:
