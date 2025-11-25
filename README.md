@@ -11,13 +11,13 @@ Um sistema completo de gerenciamento de chamados de suporte (Help Desk), desenvo
 
 ## ✨ Funcionalidades Principais
 
-* 🔐 **Autenticação Segura:** Login via JWT (JSON Web Token) com hash de senhas.
+* 🔐 **Autenticação Segura:** Login via JWT (JSON Web Token) com hash de senhas e proteção contra CORS.
 * 👤 **Controle de Acesso (RBAC):**
     * **Clientes:** Abertura de chamados e visualização apenas dos seus tickets.
-    * **Admins:** Visualização global, alteração de status e gerenciamento.
-* 💬 **Sistema de Comentários:** Chat interativo dentro de cada chamado para histórico de resolução.
-* 📊 **Dashboard Interativo:** Atualização em tempo real de novos tickets e status sem recarregar a página (SPA).
-* 🐳 **Ambiente Dockerizado:** Setup completo (Back, Front e Banco) com um único comando.
+    * **Admins:** Visão global de todos os chamados.
+* 🔄 **Workflow de Status:** O Admin pode alterar o status do ticket (Open -> In Progress -> Closed) com atualização dinâmica na tela.
+* 💬 **Sistema de Chat:** Comentários e histórico de conversas dentro de cada chamado (Roteamento Dinâmico).
+* 🐳 **Ambiente Dockerizado:** Setup completo (Back, Front e Banco) com inicialização automática via Script.
 
 ## 🛠️ Como Rodar o Projeto
 
@@ -32,10 +32,9 @@ Um sistema completo de gerenciamento de chamados de suporte (Help Desk), desenvo
     cd helpdesk-app
     ```
 
-2.  Suba os containers (Isso configurará o Banco, Backend e Frontend automaticamente):
-    ```bash
-    docker-compose up --build
-    ```
+2.  Inicie o ambiente (Windows):
+    * Execute o arquivo `iniciar.bat` e escolha a opção **[1]**.
+    * Ou via terminal: `docker-compose up --build`
 
 3.  Acesse a aplicação:
     * **Frontend:** http://localhost:5173
@@ -43,11 +42,11 @@ Um sistema completo de gerenciamento de chamados de suporte (Help Desk), desenvo
 
 ---
 
-### 🧪 Credenciais de Teste
+### 🧪 Credenciais de Teste (Admin)
 
-Para testar as funcionalidades de Admin, utilize:
+O sistema já vem com um usuário administrador pré-configurado no banco (caso use o seed):
 * **Email:** `admin@teste.com`
 * **Senha:** `senha-secreta`
 
 ---
-Desenvolvido por [Seu Nome] como projeto de portfólio Full-Stack.
+Desenvolvido como projeto de portfólio Full-Stack.

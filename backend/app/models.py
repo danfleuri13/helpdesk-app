@@ -11,23 +11,20 @@ class User(db.Model):
     role = db.Column(db.Enum('client', 'admin', name='user_roles'), default='client')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relacionamento: Um usuário pode ter criado vários tickets
+    # Relacionamentos
     tickets_created = db.relationship('Ticket', foreign_keys='Ticket.created_by', backref='author', lazy=True)
-    
-    # Relacionamento: Um admin pode ter vários tickets atribuídos a ele
     tickets_assigned = db.relationship('Ticket', foreign_keys='Ticket.assigned_to', backref='technician', lazy=True)
 
+    # CORREÇÃO 1: O to_json do User deve estar aqui e retornar os dados do USUÁRIO
     def to_json(self):
         return {
-          "id": self.id,
-            "title": self.title,
-            "description": self.description,  # <--- FALTAVA ISSO AQUI
-            "status": self.status,
-            "priority": self.priority,
-            "author": self.author.name, 
-            "created_at": self.created_at.isoformat()
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "role": self.role
         }
 
+# CORREÇÃO 2: A classe Ticket deve estar FORA da classe User (alinhada à esquerda)
 class Ticket(db.Model):
     __tablename__ = 'tickets'
 
@@ -37,23 +34,23 @@ class Ticket(db.Model):
     status = db.Column(db.Enum('open', 'in_progress', 'closed', name='ticket_status'), default='open')
     priority = db.Column(db.Enum('low', 'medium', 'high', name='ticket_priority'), default='low')
     
-    # Chaves Estrangeiras (Foreign Keys)
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     assigned_to = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relacionamento com comentários
     comments = db.relationship('Comment', backref='ticket', cascade="all, delete", lazy=True)
 
+    # CORREÇÃO 3: Mantivemos apenas UM to_json (o que tem a description)
     def to_json(self):
         return {
             "id": self.id,
             "title": self.title,
+            "description": self.description,
             "status": self.status,
             "priority": self.priority,
-            "author": self.author.name, # Graças ao backref lá em cima
+            "author": self.author.name, 
             "created_at": self.created_at.isoformat()
         }
 
@@ -66,7 +63,7 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Para saber quem comentou
+    # Relacionamento para saber quem comentou
     author = db.relationship('User', backref='comments')
 
     def to_json(self):

@@ -14,9 +14,9 @@ def create_app():
     app = Flask(__name__)
 
     # Configurações
-    # Pega a URL do banco do Docker Compose ou usa SQLite como fallback seguro
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///fallback.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['JWT_SECRET_KEY'] = 'super-secret-level-up-key'
     
     # Chave secreta para assinar os tokens JWT (em produção, isso viria de um .env escondido)
     app.config['JWT_SECRET_KEY'] = 'super-secret-level-up-key'
@@ -25,7 +25,8 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     jwt.init_app(app)
-    CORS(app) # Libera o acesso para o React
+
+    CORS(app, resources={r"/*": {"origins": "*"}}) # Libera o acesso para o React
 
     from .models import User, Ticket, Comment
 
